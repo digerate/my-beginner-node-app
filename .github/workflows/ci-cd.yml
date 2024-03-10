@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build Docker image
+      run: docker build . -t digerate/my-node-beginner-app:${{ github.sha }}
+      
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      
+    - name: Push Docker image to Docker Hub
+      run: docker push digerate/my-node-beginner-app:${{ github.sha }}
+
+  deploy-to-kubernetes:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v1
+
+    - name: Configure Kubeconfig
+      run: echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl set image deployment/my-node-app-deployment my-node-app=digerate/my-node-beginner-app:${{ github.sha }}
