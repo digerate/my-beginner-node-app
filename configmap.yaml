@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-node-app-config
+data:
+  database_name: "mydb"
+  database_host: "db.example.com"
