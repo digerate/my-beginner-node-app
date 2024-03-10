@@ -11,6 +11,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests
+      run: npm Test
+      
     - name: Build Docker image
       run: docker build . -t digerate/my-node-beginner-app:${{ github.sha }}
       
