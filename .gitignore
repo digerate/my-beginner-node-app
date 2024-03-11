@@ -1,0 +1,8 @@
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+database/app.db
+node_modules/
+.DS_Store
+*.log
