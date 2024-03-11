@@ -30,7 +30,7 @@ jobs:
     # Initialize and Apply Terraform
     - name: Terraform Init and Apply
       run: |
-        cd terraform  # Assuming your Terraform files are in a directory called 'terraform'
+        cd azure-terraform
         terraform init
         terraform apply -auto-approve
       env:
@@ -50,7 +50,7 @@ jobs:
 
     - name: Push Docker image to Docker Hub
       run: docker push digerate/my-node-beginner-app:${{ github.sha }}
-      
+
     - name: Deploy on VM
       uses: appleboy/ssh-action@master
       with:
