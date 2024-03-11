@@ -1,8 +1,12 @@
-*.tfstate
-*.tfstate.*
-*.tfvars
-.terraform/
+azure-terraform/*.tfstate
+azure-terraform/*.tfstate.*
+azure-terraform/*.tfvars
+azure-terraform/.terraform/
 database/app.db
 node_modules/
 .DS_Store
 *.log
+
+
+!azure-terraform/*.tf
+!azure-terraform/.terraform.lock.hcl
