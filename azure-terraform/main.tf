@@ -88,8 +88,17 @@ admin_ssh_key {
     username   = "digerate"
     public_key = var.ssh_public_key
   }
+custom_data = <<-EOF
+                  #cloud-config
+                  package_update: true
+                  packages:
+                    - docker.io
+                  runcmd:
+                    - usermod -aG docker digerate
+                  EOF
+}
 
-  output "vm_public_ip_address" {
+# Output the Public IP Address of the VM
+output "vm_public_ip_address" {
   value = azurerm_public_ip.vm_public_ip.ip_address
-  }
 }
