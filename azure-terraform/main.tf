@@ -88,7 +88,7 @@ admin_ssh_key {
     username   = "digerate"
     public_key = var.ssh_public_key
   }
-custom_data = <<-EOF
+custom_data = base64encode(<<-EOF
                   #cloud-config
                   package_update: true
                   packages:
@@ -96,7 +96,7 @@ custom_data = <<-EOF
                   runcmd:
                     - usermod -aG docker digerate
                   EOF
-}
+)
 
 # Output the Public IP Address of the VM
 output "vm_public_ip_address" {
