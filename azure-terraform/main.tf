@@ -97,6 +97,7 @@ custom_data = base64encode(<<-EOF
                     - usermod -aG docker digerate
                   EOF
 )
+}
 
 # Output the Public IP Address of the VM
 output "vm_public_ip_address" {
