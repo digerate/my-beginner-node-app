@@ -20,27 +20,6 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # Terraform Setup
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: latest
-        cli_config_credentials_token: ${{ secrets.GITHUB_TOKEN }}
-  
-    # Initialize and Apply Terraform
-    - name: Terraform Init and Apply
-      run: |
-        cd azure-terraform
-        terraform init
-        terraform apply -auto-approve
-      env:
-        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-        TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-
-    # Build Docker Image   
     - name: Build Docker image
       run: docker build . -t digerate/my-node-beginner-app:${{ github.sha }}
 
@@ -53,6 +32,7 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: docker push digerate/my-node-beginner-app:${{ github.sha }}
 
+    # Deploy to VM
     - name: Deploy on VM
       uses: appleboy/ssh-action@master
       with:
@@ -64,4 +44,3 @@ jobs:
           docker stop my-node-app || true
           docker rm my-node-app || true
           docker run -d --name my-node-app -p 80:3000 digerate/my-node-beginner-app:${{ github.sha }}
- 
