@@ -2,6 +2,7 @@ azure-terraform/*.tfstate
 azure-terraform/*.tfstate.*
 azure-terraform/*.tfvars
 azure-terraform/.terraform/
+azure-terraform/terraform.tfvars
 database/app.db
 node_modules/
 .DS_Store
