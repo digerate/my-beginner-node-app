@@ -20,6 +20,25 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    # Terraform Setup
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: latest
+        cli_config_credentials_token: ${{ secrets.GITHUB_TOKEN }}
+  
+    # Initialize and Apply Terraform
+    - name: Terraform Init and Apply
+      run: |
+        cd terraform  # Assuming your Terraform files are in a directory called 'terraform'
+        terraform init
+        terraform apply -auto-approve
+      env:
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
     - name: Build Docker image
       run: docker build . -t digerate/my-node-beginner-app:${{ github.sha }}
 
@@ -31,21 +50,7 @@ jobs:
 
     - name: Push Docker image to Docker Hub
       run: docker push digerate/my-node-beginner-app:${{ github.sha }}
-
-    #- name: Save Docker image to tar.gz
-    #  run: |
-    #    docker save digerate/my-node-beginner-app:${{ github.sha }} | gzip > my-node-app.tar.gz
-
-    #- name: Copy Docker image to VM
-    #  uses: appleboy/scp-action@master
-    #  with:
-    #    host: ${{ secrets.VM_IP }}
-    #    username: ${{ secrets.VM_SSH_USER }}
-    #    key: ${{ secrets.VM_SSH_KEY }}
-    #    port: 22
-    #    source: "my-node-app.tar.gz"
-    #    target: "/tmp"
-    # Deploy to VM
+      
     - name: Deploy on VM
       uses: appleboy/ssh-action@master
       with:
