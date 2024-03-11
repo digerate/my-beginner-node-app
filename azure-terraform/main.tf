@@ -10,11 +10,19 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+variable "ssh_public_key" {
+    description = "SSH public_key"
+    type        = string
+}
+
+# Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "devops_practices"
   location = "Australia East"
 }
 
+# Virtual Network
 resource "azurerm_virtual_network" "vnet" {
   name                = "mynodeAppVnet"
   address_space       = ["10.0.0.0/16"]
@@ -22,6 +30,7 @@ resource "azurerm_virtual_network" "vnet" {
   resource_group_name = azurerm_resource_group.rg.name
 }
 
+# subnet
 resource "azurerm_subnet" "subnet" {
   name                 = "mynodeAppSubnet"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -29,6 +38,16 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+# Public IP
+resource "azurerm_public_ip" "vm_public_ip" {
+  name                = "myVMpublicIP"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Dynamic"
+  sku                 = "Basic"
+}
+
+# Network Interface
 resource "azurerm_network_interface" "nic" {
   name                = "mynodeAppNIC"
   location            = azurerm_resource_group.rg.location
@@ -38,9 +57,11 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          =  azurerm_public_ip.vm_public_ip.id
   }
 }
 
+# Linux Virtual Machine
 resource "azurerm_linux_virtual_machine" "vm" {
   name                = "devops"
   resource_group_name = azurerm_resource_group.rg.name
@@ -63,8 +84,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  admin_ssh_key {
+admin_ssh_key {
     username   = "digerate"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
   }
 }
